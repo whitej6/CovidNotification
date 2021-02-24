@@ -4,3 +4,6 @@ include/
 lib/
 lib64
 pyvenv.cfg
+
+# Editor config
+.vscode/
