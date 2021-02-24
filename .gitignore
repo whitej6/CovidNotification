@@ -1,0 +1,6 @@
+# Virtual environment mess
+bin/
+include/
+lib/
+lib64
+pyvenv.cfg
