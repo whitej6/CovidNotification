@@ -1,9 +1,11 @@
 # Covid Notification
 
 ## Simple Slack + Docker Python API Scraper
+
 Scrapes an API endpoint exposed by H-E-B and based on `config.yml` will send notifications to a slack channel
 
 ### Example config.yml
+
 ```yaml
 ---
 # To get your token just go to https://api.slack.com/custom-integrations/legacy-tokens Scroll down to the "Legacy information" section and click Issue token/Re-issue token
@@ -25,6 +27,7 @@ zip_codes:
 ```
 
 ### Build & Launch command for Docker
+
 ```bash
 docker build -t covid_bot:latest .
 docker run -itd --name covid_bot covid_bot:latest
