@@ -63,7 +63,7 @@ def format_block(payload: Dict[str, str], success: bool) -> List[Dict[str, Any]]
                     {"type": "mrkdwn", "text": "*Address*"},
                     {
                         "type": "plain_text",
-                        "text": f"{payload['street']}\n{payload['city']},{payload['state']} {payload['zip']}",
+                        "text": f"{payload['street']}\n{payload['city']}, {payload['state']} {payload['zip']}",
                     },
                 ],
             }
