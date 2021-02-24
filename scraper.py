@@ -46,7 +46,7 @@ def format_block(payload: Dict[str, str], success: bool) -> List[Dict[str, Any]]
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "<!here> An appointment was located at your local *H-E-B*!",
+                    "text": "<!here> An appointment was located at your local *H-E-B*! https://vaccine.heb.com/scheduler",
                 },
                 "fields": [
                     {"type": "mrkdwn", "text": "*Type*"},
@@ -65,8 +65,6 @@ def format_block(payload: Dict[str, str], success: bool) -> List[Dict[str, Any]]
                         "type": "plain_text",
                         "text": f"{payload['street']}\n{payload['city']},{payload['state']} {payload['zip']}",
                     },
-                    {"type": "mrkdwn", "text": "*Link*"},
-                    {"type": "plain_text", "text": "https://vaccine.heb.com/scheduler"},
                 ],
             }
         ]
