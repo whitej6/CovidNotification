@@ -1,4 +1,3 @@
-
 import logging
 import os
 import time
@@ -8,19 +7,20 @@ import yaml
 import requests
 import slack
 
-with open('config.yml', 'r') as f:
+with open("config.yml", "r") as f:
     CONFIG = yaml.load(f, Loader=yaml.FullLoader)
 
-URL = CONFIG['url']
-ZIP_CODES = CONFIG['zip_codes']
-TOKEN = CONFIG['token']
-CHANNEL = CONFIG['channel']
-ICON = CONFIG['icon']
+URL = CONFIG["url"]
+ZIP_CODES = CONFIG["zip_codes"]
+TOKEN = CONFIG["token"]
+CHANNEL = CONFIG["channel"]
+ICON = CONFIG["icon"]
 APPTS_FOUND = {}
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
-log = logging.getLogger('covid_appt_bot')
+log = logging.getLogger("covid_appt_bot")
 log.setLevel(level=os.environ.get("LOGLEVEL", "INFO"))
+
 
 def post_to_slack(message, city):
     client = slack.WebClient(token=TOKEN)
@@ -29,8 +29,9 @@ def post_to_slack(message, city):
         blocks=message,
         # as_user=False,  # Throws SlackApiError, Deprecated
         username=city,
-        icon_emoji=ICON
+        icon_emoji=ICON,
     )
+
 
 def format_block(payload: Dict[str, str], success: bool) -> List[Dict[str, Any]]:
     """
@@ -45,58 +46,28 @@ def format_block(payload: Dict[str, str], success: bool) -> List[Dict[str, Any]]
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "<!here> An appointment was located at your local *H-E-B*!"
+                    "text": "<!here> An appointment was located at your local *H-E-B*!",
                 },
                 "fields": [
-                    {
-                        "type": "mrkdwn",
-                        "text": "*Type*"
-                    },
-                    {
-                        "type": "plain_text",
-                        "text": payload['type']
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": "*Location*"
-                    },
+                    {"type": "mrkdwn", "text": "*Type*"},
+                    {"type": "plain_text", "text": payload["type"]},
+                    {"type": "mrkdwn", "text": "*Location*"},
+                    {"type": "plain_text", "text": payload["name"]},
+                    {"type": "mrkdwn", "text": "*Available Time Slots*"},
+                    {"type": "plain_text", "text": str(payload["openTimeslots"])},
+                    {"type": "mrkdwn", "text": "*Available Appointment Slots*"},
                     {
                         "type": "plain_text",
-                        "text": payload['name']
+                        "text": str(payload["openAppointmentSlots"]),
                     },
-                    {
-                        "type": "mrkdwn",
-                        "text": "*Available Time Slots*"
-                    },
+                    {"type": "mrkdwn", "text": "*Address*"},
                     {
                         "type": "plain_text",
-                        "text": str(payload['openTimeslots'])
+                        "text": f"{payload['street']}\n{payload['city']},{payload['state']} {payload['zip']}",
                     },
-                    {
-                        "type": "mrkdwn",
-                        "text": "*Available Appointment Slots*"
-                    },
-                    {
-                        "type": "plain_text",
-                        "text": str(payload['openAppointmentSlots'])
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": "*Address*"
-                    },
-                    {
-                        "type": "plain_text",
-                        "text": f"{payload['street']}\n{payload['city']},{payload['state']} {payload['zip']}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": "*Link*"
-                    },
-                    {
-                        "type": "plain_text",
-                        "text": "https://vaccine.heb.com/scheduler"
-                    }
-                ]
+                    {"type": "mrkdwn", "text": "*Link*"},
+                    {"type": "plain_text", "text": "https://vaccine.heb.com/scheduler"},
+                ],
             }
         ]
     else:
@@ -105,11 +76,12 @@ def format_block(payload: Dict[str, str], success: bool) -> List[Dict[str, Any]]
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "An appointment was NOT located at any of your local *H-E-B* locations..."
+                    "text": "An appointment was NOT located at any of your local *H-E-B* locations...",
                 },
             }
         ]
     return response
+
 
 while True:
 
@@ -119,21 +91,21 @@ while True:
     log.info("Querying API")
     r = requests.get(URL)
     json = r.json()
-    for i in json.get('locations', []):
-        if i['zip'][:5] in ZIP_CODES:
-            if i['openAppointmentSlots'] or i['openTimeslots']:
+    for i in json.get("locations", []):
+        if i["zip"][:5] in ZIP_CODES:
+            if i["openAppointmentSlots"] or i["openTimeslots"]:
                 log.info(f'Appointment found at {i["name"]}')
-                if not APPTS_FOUND.get(i['name'], False):
-                    log.info('Sending message to slack')
-                    post_to_slack(format_block(i, True), i.get('city'))
-                    APPTS_FOUND[i['name']] = True
+                if not APPTS_FOUND.get(i["name"], False):
+                    log.info("Sending message to slack")
+                    post_to_slack(format_block(i, True), i.get("city"))
+                    APPTS_FOUND[i["name"]] = True
                     any_appts_found = True
                 else:
-                    log.info('Message previously sent to slack')
+                    log.info("Message previously sent to slack")
             else:
-                log.debug('No appointments found.')
-                APPTS_FOUND[i['name']] = False
+                log.debug("No appointments found.")
+                APPTS_FOUND[i["name"]] = False
 
     if log.level == 10 and not any_appts_found:
-        post_to_slack(format_block(i, False), i.get('city'))
+        post_to_slack(format_block(i, False), i.get("city"))
     time.sleep(10)
