@@ -17,10 +17,15 @@ CHANNEL = CONFIG["channel"]
 ICON = CONFIG["icon"]
 THRESHOLD = CONFIG["threshold"]
 APPTS_FOUND = {}
+LOGLEVEL = os.environ.get("LOGLEVEL", "INFO")
 
-logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+logging.basicConfig(
+    level=LOGLEVEL,
+    format="%(asctime)s.%(msecs)03d %(levelname)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 log = logging.getLogger("covid_appt_bot")
-log.setLevel(level=os.environ.get("LOGLEVEL", "INFO"))
+log.setLevel(LOGLEVEL)  # Required to make below conditional slack messaging work
 
 
 def post_to_slack(message: List[Dict[str, Any]], city: str):
@@ -94,7 +99,8 @@ while True:
         if i["zip"][:5] in ZIP_CODES:
             if i["openAppointmentSlots"] <= THRESHOLD and i["openAppointmentSlots"] > 0:
                 log.info(
-                    f"{i['openAppointmentSlots']} slots found, but below threshold of {THRESHOLD}."
+                    f"{i['openAppointmentSlots']} slots found in {i.get('city')},"
+                    f" but below threshold of {THRESHOLD}."
                 )
                 APPTS_FOUND[i["name"]] = False
             elif i["openAppointmentSlots"] or i["openTimeslots"]:
