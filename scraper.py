@@ -97,14 +97,26 @@ while True:
     json = r.json()
     for i in json.get("locations", []):
         if i["zip"][:5] in ZIP_CODES:
-            if i["openAppointmentSlots"] <= THRESHOLD and i["openAppointmentSlots"] > 0:
+            # We didn't find any Timeslots or appointments in those timeslots
+            if not i["openTimeslots"] and not i["openAppointmentSlots"]:
+                log.debug("No appointments found.")
+                APPTS_FOUND[i["name"]] = False
+
+            # We found some open appointment slots, however they were below the set threshold
+            elif (
+                i["openAppointmentSlots"] <= THRESHOLD and i["openAppointmentSlots"] > 0
+            ):
                 log.info(
                     f"{i['openAppointmentSlots']} slot(s) found at {i.get('name')},"
                     f" below threshold of {THRESHOLD}."
                 )
                 APPTS_FOUND[i["name"]] = False
-            elif i["openAppointmentSlots"] or i["openTimeslots"]:
-                log.info(f'Appointment found at {i["name"]}')
+
+            # So therefore if we're here, we must have something to show for it
+            else:
+                log.info(
+                    f"{i['openAppointmentSlots']} appointment(s) found at {i['name']}"
+                )
                 if not APPTS_FOUND.get(i["name"], False):
                     log.info("Sending message to slack")
                     post_to_slack(format_block(i, True), i.get("city"))
@@ -112,9 +124,6 @@ while True:
                     any_appts_found = True
                 else:
                     log.info("Message previously sent to slack")
-            else:
-                log.debug("No appointments found.")
-                APPTS_FOUND[i["name"]] = False
 
     if log.level == 10 and not any_appts_found:
         post_to_slack(format_block(i, False), i.get("city"))
