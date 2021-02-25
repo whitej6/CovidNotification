@@ -15,7 +15,7 @@ ZIP_CODES = CONFIG["zip_codes"]
 TOKEN = CONFIG["token"]
 CHANNEL = CONFIG["channel"]
 ICON = CONFIG["icon"]
-THRESHOLD =CONFIG["threshold"]
+THRESHOLD = CONFIG["threshold"]
 APPTS_FOUND = {}
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -93,7 +93,9 @@ while True:
     for i in json.get("locations", []):
         if i["zip"][:5] in ZIP_CODES:
             if i["openAppointmentSlots"] <= THRESHOLD and i["openAppointmentSlots"] > 0:
-                log.info(f"{i['openAppointmentSlots']} slots found, but below threshold of {THRESHOLD}.")
+                log.info(
+                    f"{i['openAppointmentSlots']} slots found, but below threshold of {THRESHOLD}."
+                )
                 APPTS_FOUND[i["name"]] = False
             elif i["openAppointmentSlots"] or i["openTimeslots"]:
                 log.info(f'Appointment found at {i["name"]}')
