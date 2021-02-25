@@ -92,7 +92,7 @@ while True:
     # Figure out if we found _any_ appointments
     any_appts_found = False
 
-    log.info("Querying API")
+    log.info("Querying API for %s ZIP codes", str(len(ZIP_CODES)))
     r = requests.get(URL)
     json = r.json()
     for i in json.get("locations", []):
@@ -107,15 +107,19 @@ while True:
                 i["openAppointmentSlots"] <= THRESHOLD and i["openAppointmentSlots"] > 0
             ):
                 log.info(
-                    f"{i['openAppointmentSlots']} slot(s) found at {i.get('name')},"
-                    f" below threshold of {THRESHOLD}."
+                    "%s slot(s) found at %s, below threshold of %s",
+                    str(i["openAppointmentSlots"]),
+                    i.get("name"),
+                    str(THRESHOLD),
                 )
                 APPTS_FOUND[i["name"]] = False
 
             # So therefore if we're here, we must have something to show for it
             else:
                 log.info(
-                    f"{i['openAppointmentSlots']} appointment(s) found at {i['name']}"
+                    "%s appointment(s) found at %s",
+                    str(i["openAppointmentSlots"]),
+                    i["name"],
                 )
                 if not APPTS_FOUND.get(i["name"], False):
                     log.info("Sending message to slack")
