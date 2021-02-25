@@ -99,8 +99,8 @@ while True:
         if i["zip"][:5] in ZIP_CODES:
             if i["openAppointmentSlots"] <= THRESHOLD and i["openAppointmentSlots"] > 0:
                 log.info(
-                    f"{i['openAppointmentSlots']} slots found in {i.get('city')},"
-                    f" but below threshold of {THRESHOLD}."
+                    f"{i['openAppointmentSlots']} slot(s) found at {i.get('name')},"
+                    f" below threshold of {THRESHOLD}."
                 )
                 APPTS_FOUND[i["name"]] = False
             elif i["openAppointmentSlots"] or i["openTimeslots"]:
