@@ -8,8 +8,14 @@ channel: "XXXXXX"
 
 # H-E-B Information
 url: "https://heb-ecom-covid-vaccine.hebdigital-prd.com/vaccine_locations.json"
+
 # Replace with icon you would like to show up in Slack
-icon: ":XXXXX:"
+icon: ":syringe:"
+
+# Do you want to chase all appointments or only the big drops?
+# If set to higher than 1, will only alert on more than one slot available.
+threshold: 1
+
 # Replace with zip codes for the Locations you would like to be notified of
 zip_codes:
   - "77055"

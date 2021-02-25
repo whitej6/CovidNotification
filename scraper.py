@@ -15,6 +15,7 @@ ZIP_CODES = CONFIG["zip_codes"]
 TOKEN = CONFIG["token"]
 CHANNEL = CONFIG["channel"]
 ICON = CONFIG["icon"]
+THRESHOLD =CONFIG["threshold"]
 APPTS_FOUND = {}
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -22,7 +23,7 @@ log = logging.getLogger("covid_appt_bot")
 log.setLevel(level=os.environ.get("LOGLEVEL", "INFO"))
 
 
-def post_to_slack(message, city):
+def post_to_slack(message: List[Dict[str, Any]], city: str):
     client = slack.WebClient(token=TOKEN)
     client.chat_postMessage(
         channel=CHANNEL,
@@ -91,7 +92,10 @@ while True:
     json = r.json()
     for i in json.get("locations", []):
         if i["zip"][:5] in ZIP_CODES:
-            if i["openAppointmentSlots"] or i["openTimeslots"]:
+            if i["openAppointmentSlots"] <= THRESHOLD and i["openAppointmentSlots"] > 0:
+                log.info(f"{i['openAppointmentSlots']} slots found, but below threshold of {THRESHOLD}.")
+                APPTS_FOUND[i["name"]] = False
+            elif i["openAppointmentSlots"] or i["openTimeslots"]:
                 log.info(f'Appointment found at {i["name"]}')
                 if not APPTS_FOUND.get(i["name"], False):
                     log.info("Sending message to slack")
