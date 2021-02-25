@@ -104,7 +104,7 @@ while True:
 
             # We found some open appointment slots, however they were below the set threshold
             elif (
-                i["openAppointmentSlots"] <= THRESHOLD and i["openAppointmentSlots"] > 0
+                i["openAppointmentSlots"] < THRESHOLD and i["openAppointmentSlots"] > 0
             ):
                 log.info(
                     "%s slot(s) found at %s, below threshold of %s",
