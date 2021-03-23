@@ -52,7 +52,7 @@ def format_block(payload: Dict[str, str], success: bool) -> List[Dict[str, Any]]
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "<!here> An appointment was located at your local *H-E-B*! https://vaccine.heb.com/scheduler",
+                    "text": "<!here> An appointment was located at your local *H-E-B*! https://vaccine.heb.com/scheduler?q=" + payload['zip'],
                 },
                 "fields": [
                     {"type": "mrkdwn", "text": "*Type*"},
@@ -86,6 +86,18 @@ def format_block(payload: Dict[str, str], success: bool) -> List[Dict[str, Any]]
         ]
     return response
 
+
+# Sends a startup message so you know it's working correctly.
+message = [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f"Bot has started monitoring zip codes {', '.join(ZIP_CODES)}",
+            },
+        }
+    ]
+post_to_slack(message, "Bot")
 
 while True:
 
