@@ -4,6 +4,10 @@
 
 Scrapes an API endpoint exposed by H-E-B and based on `config.yml` will send notifications to a slack channel
 
+### Slack App
+
+If you don't have a legacy Slack token you will need to create an App at https://api.slack.com/apps. After you name the App, go to 'OAuth & Permissions' and add Bot Token Scopes 'chat:write' and 'chat:write.customize'. Afterward, install the app in your workspace (button at the top) and it will give you a token.
+
 ### Example config.yml
 
 ```yaml
@@ -25,6 +29,8 @@ zip_codes:
   - "77302"
   - "77386"
 ```
+
+> Don't forget to invite the bot to the channel before starting!
 
 ### Build & Launch command for Docker
 
